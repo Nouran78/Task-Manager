@@ -11,6 +11,10 @@ const { name, email, password } = req.body;
   if (!name || !email || !password) {
     return next(new AppError("Please fill all the fields", 400));
   }
+    // password validation
+  if (password.length < 6) {
+    return next(new AppError("Password must be at least 6 characters", 400));
+  }
   //check if user already exists
   const userExist = await User.findOne({ email });
   if (userExist) {
@@ -39,10 +43,10 @@ const { name, email, password } = req.body;
     },
   });
 });
-
 //login 
 const login=asyncWrapper(async(req,res,next)=>{
-const {email,password}=req.body;
+  const { email,password }=req.body;
+  // console.log(req.body);  
 
 if(!email || !password ){
     return next(
@@ -62,10 +66,10 @@ const passwordMatch=await bcrypt.compare(
     password,
     user.password
 );
-if(!passwordMatch){
-    return next(
-        new AppError("Wrong password",401)
-);
+if (!passwordMatch) {
+  return next(
+    new AppError("Invalid email or password", 401)
+  );
 }
 
 const token = generateJWT({
